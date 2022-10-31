@@ -1,12 +1,16 @@
 package group
 
-import "github.com/gofrs/uuid"
+import (
+	"context"
+
+	"github.com/gofrs/uuid"
+)
 
 type Repository interface {
-	CreateGroup(CreateGroupRequest) (CreateGroupResponse, error)
-	RetrieveGroup(RetrieveGroupRequest) (RetrieveGroupResponse, error)
-	DeleteGroup(DeleteGroupRequest) (DeleteGroupResponse, error)
-	SearchGroup(SearchGroupRequest) (SearchGroupResponse, error)
+	CreateGroup(context.Context, CreateGroupRequest) (CreateGroupResponse, error)
+	RetrieveGroup(context.Context, RetrieveGroupRequest) (RetrieveGroupResponse, error)
+	DeleteGroup(context.Context, DeleteGroupRequest) (DeleteGroupResponse, error)
+	SearchGroup(context.Context, SearchGroupRequest) (SearchGroupResponse, error)
 }
 
 type CreateGroupRequest struct {
