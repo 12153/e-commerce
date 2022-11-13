@@ -6,16 +6,16 @@ import (
 	"net/http"
 	"time"
 
+	productHandlers "github.com/12153/e-commerce/pkg/product/handlers"
 	"github.com/gorilla/mux"
 	"github.com/rs/zerolog/log"
 )
 
 func main() {
-
 	sm := mux.NewRouter()
 
 	// register product handler
-	NewProductHandler(sm)
+	productHandlers.NewProductHandler(sm)
 
 	s := http.Server{
 		Addr:         ":8001",

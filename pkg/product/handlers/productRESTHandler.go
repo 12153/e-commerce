@@ -1,4 +1,4 @@
-package handlers
+package product
 
 import (
 	"fmt"
@@ -10,7 +10,9 @@ import (
 )
 
 func NewProductHandler(r *mux.Router) {
-	r.HandleFunc("/product/{id}", GetProduct).Methods(http.MethodGet)
+	sr := r.Path("/products").Subrouter()
+	sr.HandleFunc("/{id}", GetProduct).Methods(http.MethodGet)
+
 }
 
 func GetProduct(w http.ResponseWriter, r *http.Request) {
