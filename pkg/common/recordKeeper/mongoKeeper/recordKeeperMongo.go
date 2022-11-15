@@ -12,25 +12,27 @@ import (
 	mongoBSON "go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"go.opentelemetry.io/otel/trace"
 )
 
 // var _ recordKeeper.RecordKeeper = &RecordKeeperMongo{}
 
 type RecordKeeperMongo struct {
-	tracer            trace.Tracer
 	collection        mongo.Collection
 	historyCollection mongo.Collection
 }
 
+func NewRecordKeeper(
+	mongoDB mongo.Database,
+	collectionName string,
+) *RecordKeeperMongo {
+	return &RecordKeeperMongo{
+		collection:        *mongoDB.Collection(collectionName),
+		historyCollection: *mongoDB.Collection(collectionName + "_history"),
+	}
+}
+
 // CreateEntity implements recordKeeper.RecordKeeper
 func (r *RecordKeeperMongo) CreateEntity(ctx context.Context, entity interface{}) (recordKeeper.RollBackFunc, error) {
-	ctx, span := r.tracer.Start(
-		ctx,
-		r.collection.Name()+"Recordkeeper.CreateEntity",
-	)
-	defer span.End()
-
 	result, err := r.collection.InsertOne(ctx, entity)
 	// return if successful
 	rollBack := func() error {
@@ -117,12 +119,6 @@ func QueryToMongoFindOptions(q query.Query) (*options.FindOptions, error) {
 }
 
 func (r *RecordKeeperMongo) FindEntities(ctx context.Context, entities interface{}, identifier search.Identifier, query query.Query) (int64, error) {
-	ctx, span := r.tracer.Start(
-		ctx,
-		r.collection.Name()+"Recordkeeper.FindEntities",
-	)
-	defer span.End()
-
 	if err := identifier.IsValid(); err != nil {
 		return 0, err
 	}
